@@ -11,35 +11,29 @@ const headers = {
   'Access-Control-Allow-Credentials': true,
 };
 
-enum StatusCode {
+export enum StatusCode {
   NotFound = 404,
+  BadRequest = 400,
   InternalServerError = 500,
-  Success = 200
+  Success = 200,
+  Created = 201
 }
 
-
-export const formatJSONResponse = (response: Record<string, unknown>) => {
+const formatJSONResponse = (response: Record<string, unknown>, statusCode: StatusCode) => {
   return {
-    statusCode: StatusCode.Success,
+    statusCode,
     headers,
     body: JSON.stringify(response)
   }
 }
 
-export const formatJSONResponseError = (response: Record<string, unknown>) => {
-  return {
-    statusCode: StatusCode.InternalServerError,
-    headers,
-    body: JSON.stringify(response)
-  }
+export const response = {
+  [StatusCode.Success]: (response: Record<string, unknown>) =>  formatJSONResponse(response, StatusCode.Success),
+  [StatusCode.BadRequest]: (response: Record<string, unknown>) =>  formatJSONResponse(response, StatusCode.BadRequest),
+  [StatusCode.Created]: (response: Record<string, unknown>) => formatJSONResponse(response, StatusCode.Created),
+  [StatusCode.NotFound]: (response: Record<string, unknown>) => formatJSONResponse(response, StatusCode.NotFound),
+  [StatusCode.InternalServerError]: (response: Record<string, unknown>) => formatJSONResponse(response, StatusCode.InternalServerError),
 }
 
-export const formatJSONResponseNotFound = (response: Record<string, unknown>) => {
-  return {
-    statusCode: StatusCode.NotFound,
-    headers,
-    body: JSON.stringify(response)
-  }
-}
 
 
