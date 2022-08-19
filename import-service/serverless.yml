@@ -1,0 +1,50 @@
+service: import-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: eu-west-1
+  
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::${env:BUCKET}"
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+      - "arn:aws:s3:::${env:BUCKET}/*"
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+# plugins and specific conditions 
+useDotenv: true
+
+functions:
+  importProductsFile:
+    handler: handlers.importProductsFile
+    events:
+      - http:
+          method: get
+          path: import
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                name: true
+
+  importFileParser:
+    handler: handlers.importFileParser
+    events:
+        - s3:
+            bucket: ${env:BUCKET}
+            event: s3:ObjectCreated:*
+            rules:
+              - prefix: uploaded/
+            existing: true

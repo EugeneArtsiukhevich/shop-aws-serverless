@@ -21,7 +21,6 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-dotenv-plugin
-
 # plugins and specific conditions 
 useDotenv: true
 
