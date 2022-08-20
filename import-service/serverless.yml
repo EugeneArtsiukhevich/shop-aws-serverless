@@ -7,6 +7,10 @@ provider:
   runtime: nodejs14.x
   stage: dev
   region: eu-west-1
+
+  environment:
+    SQS_URL:
+      Ref: SQSQueue
   
   iamRoleStatements:
     - Effect: "Allow"
@@ -18,6 +22,10 @@ provider:
         - "s3:*"
       Resource:
       - "arn:aws:s3:::${env:BUCKET}/*"
+    - Effect: "Allow"
+      Action: "sqs:*"
+      Resource:
+      - ${env:SQS_ARN}
 
 plugins:
   - serverless-webpack
